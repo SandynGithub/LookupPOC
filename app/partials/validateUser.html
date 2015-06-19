@@ -1,0 +1,26 @@
+<header role="banner">
+    <div>
+        Validate User
+    </div>
+</header>
+
+<article role="main" class="page-level-padding">
+    <input id="dl"
+           name="dl"
+           type="text"
+           class="full"
+           ng-model="model.dl"
+           ng-focus
+           required>
+
+    <p> Store Associate validating the Customer Id.</p>
+
+     <span>
+        <a id="backButton" class="standard-button-2" ng-click="cancel()">
+            Cancel
+        </a>
+        <button id="continueButton" class="standard-button-3"
+                ng-click="navigate('/displayCC')">Continue
+        </button>
+    </span>
+</article>

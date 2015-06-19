@@ -1,0 +1,152 @@
+import groovy.time.*
+apply plugin: 'idea'
+
+// Watchmen configuration
+buildscript {
+    repositories {
+        maven {
+            url 'http://artifactory.gapinc.dev/artifactory/remote-repos'
+        }
+        ivy {
+            layout 'maven'
+            url "http://artifactory.gapinc.dev/artifactory/remote-repos"
+        }
+    }
+    dependencies {
+            classpath 'com.gap:gap-gradle-plugin:+'
+			classpath "com.netflix.nebula:gradle-ospackage-plugin:1.8.4"
+    }
+}
+
+apply plugin: 'gappipeline'
+apply plugin: 'gapupload'
+apply plugin: 'gap-sonar-runner'
+
+project.ext {
+    
+     sourceCompatibility = JavaVersion.VERSION_1_6
+     targetCompatibility = JavaVersion.VERSION_1_6
+     home_npm = getNodeModulesPath()    
+}
+
+def getNodeModulesPath() {
+	if (System.properties['os.name'].toLowerCase().contains('windows')) 
+    	System.properties['user.home'] + '/AppData/Roaming/npm/'
+    else if(System.env.NPM_HOME != null)
+    	System.env.NPM_HOME
+	else
+    	'/usr/local/lib/'
+}
+
+task noop {}
+
+subprojects {
+	apply plugin: "gappipeline"
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'maven'
+
+    if (offline != "true") {    //  Offline is used when working remotely - ie not onsite and not connected to Gap VPN
+        System.setProperty("http.proxyHost", "qaproxy.gid.gap.com")
+        System.setProperty("http.proxyPort", "8080")
+        System.setProperty("http.nonProxyHosts", "*.gapinc.dev|*.gap.dev|*.gap.com|localhost")
+        System.setProperty("https.proxyHost", "qaproxy.gid.gap.com")
+        System.setProperty("https.proxyPort", "8080")
+        System.setProperty("https.nonProxyHosts", "*.gapinc.dev|*.gap.dev|*.gap.com|localhost")
+    } 
+
+    repositories {
+        if (offline != "true") {    //  Offline is used when working remotely - ie not onsite and not connected to Gap VPN
+            mavenCentral()
+            add project.repositories.wm_maven_remote_repos
+            add project.repositories.wm_ivy_remote_repos
+        } else {
+            mavenCentral()
+        }
+    }
+
+    defaultTasks "test"
+  
+
+    // @TODO: This seems eclipse-specific. Is this really needed?
+    def sysenv = System.getenv()
+    if (sysenv['GRADLE_HOME'] != '' && sysenv['GRADLE_HOME'] != null) {
+        eclipse.pathVariables 'GRADLE_HOME': file(sysenv['GRADLE_HOME'])
+    }
+
+    uploadArchives {
+        repositories {
+            add project.repositories.wm_local_non_prod
+        }
+    }
+    
+    task cleanUp {
+        doLast {
+            println "Removing the direcotry" + "/dev/shm/" + version    
+        }
+    }
+	
+    sonarRunner {
+        sonarProperties {
+            property "sonar.sources", "app/js/"
+            property "sonar.tests", "test/"
+            property "sonar.javascript.lcov.reportPath", "build/test-results/coverage/PhantomJS 1.9.8 (Linux)/lcov.info"
+        }
+    }
+
+}
+
+project(':functional-tests') {
+    sonarRunner {
+        skipProject = true
+    }
+}
+
+sonarRunner {
+			
+def envp = System.getenv()
+	
+	    sonarProperties {
+	        property "sonar.projectName", "SnapCard - UI"
+	       // property "sonar.host.url", "http://sonar001.phx.gapinc.dev:9000"
+	       // property "sonar.jdbc.url", "jdbc:mysql://dgphxmetdb002.phx.gapinc.dev:3306/sonar?useUnicode=true&characterEncoding=utf8"
+	       // property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
+			property "sonar.collectCoverage","true"
+	       property "sonar.profile", "Sonar way"
+	       // property "sonar.dynamicAnalysis", "reuseReports"
+	        property "sonar.language", "js"
+	        property "sonar.exclusions", "lib/**, vendor/**, mocks/**, *.js, **/nls/root/*.js, **/directives/prevent-non-numeric-input.js, **/directives/debug.js"
+			
+	    }
+
+
+
+
+
+}
+
+tasks.sonarRunner.doFirst {
+	 println "We are running sonarRunner!"
+	 Exception excep = new IllegalStateException()
+	 def attempt=0
+	 while(excep!=null && attempt<3) {
+		 try {
+			 tasks.sonar.execute()
+			 excep = null
+		 }
+		 catch(IllegalStateException e) {
+		 	excep=e;
+			println "Encountered IllegalStateException"
+			sleep(6000)
+			
+		 }
+		 attempt=attempt+1
+	 } 
+
+}
+
+
+
+
+	

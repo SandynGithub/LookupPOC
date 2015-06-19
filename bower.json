@@ -1,0 +1,35 @@
+{
+  "name": "snapcard",
+  "version": "0.0.1",
+  "authors": [
+    "Gap"
+  ],
+  "description": "Lookup",
+  "main": "app/js/main.js",
+  "license": "none",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "style-guide": "http://artifactory.gapinc.dev/artifactory/local-non-prod/com/gap/selling/stores/webposui/style-guide/21369/style-guide-21369.tar",
+    "refresh-token": "http://artifactory.gapinc.dev/artifactory/local-non-prod/com/gap/selling/stores/webposui/refresh-token/21792/refresh-token-21792.tar",
+    "idle-timeout": "http://artifactory.gapinc.dev/artifactory/local-non-prod/com/gap/selling/stores/webposui/idle-timeout/21817/idle-timeout-21817.tar",
+    "signature_pad": "~1.3.2",
+    "angular": "1.2.25",
+    "angular-mocks": "~1.2.25",
+    "angular-resource": "~1.2.25",
+    "angular-route": "~1.2.25",
+    "angular-touch": "~1.2.25",
+    "i18n": "requirejs/i18n#~2.0.4",
+    "q": "1.0.1",
+    "requirejs": "~2.1.13",
+    "underscore": "~1.5.2",
+    "angular-ui-keypress": "angular-ui-utils#bower-keypress#~0.1.1",
+    "tracekit": "*"
+  }
+}

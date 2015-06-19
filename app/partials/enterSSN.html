@@ -1,0 +1,32 @@
+<header role="banner">
+    <div>
+        Enter SSN
+    </div>
+</header>
+
+<article role="main" class="page-level-padding">
+    <input id="socialSecurityNumber"
+           name="socialSecurityNumber"
+           autofocus="autofocus"
+           type="password"
+           maxlength="9"
+           prevent-non-numeric-input
+           class="full"
+           placeholder="###-##-####"
+           ng-model="model.socialSecurityNumber.value"
+           ng-pattern="/^(\d{3}-?\d{2}-?\d{4})$/"
+           pattern="[0-9]*"
+           ng-focus
+           notallrepeat-field
+           required
+            >
+
+     <span>
+        <a id="backButton" class="standard-button-2" ng-click="cancel()">
+            Cancel
+        </a>
+        <button id="continueButton" class="standard-button-3"
+                ng-click="navigate('/validateUser')">Continue
+        </button>
+    </span>
+</article>
