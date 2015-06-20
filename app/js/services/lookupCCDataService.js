@@ -10,6 +10,12 @@ define([
             setCancelPath: function (path) {
                 lookupModel.cancelPath = path;
             },
+            setConsumingAppPath: function(path){
+                lookupModel.callerAppPath =  path;
+            },
+            getConsumingAppPath: function(){
+                return lookupModel.callerAppPath;
+            },
             getCancelPath: function () {
                 return lookupModel.cancelPath;
             },
@@ -18,6 +24,9 @@ define([
             },
             getCreditCards: function(){
                 return lookupModel.creditCards;
+            },
+            getLookupCCPath: function(){
+                return '/enterSSN';
             }
         };
     });
